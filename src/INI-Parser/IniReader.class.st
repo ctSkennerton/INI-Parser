@@ -77,14 +77,14 @@ IniReader >> on: aReadStream [
 { #category : #parsing }
 IniReader >> parse [
 	"Main entry point. Returns a two level dictionary of the straem contents"
-	| char |
+	| char section keyValue |
 	self consumeWhitespace .
 	
 	readStream atEnd ifFalse: [ 
 		char := readStream peek.
 		char = $[
 			ifTrue: [ 
-				|section| 
+				
 				section := self parseSection.
 				data at: section put: Dictionary new.
 				 ].
@@ -92,7 +92,11 @@ IniReader >> parse [
 			ifTrue: [ self parseComment ].
 		char = $#
 			ifTrue: [ self parseComment ].
-		self parseKeyValuePair ].
+		
+		keyValue := self parseKeyValuePair.
+		data at: section at: (keyValue at: 1) put: (keyValue at: 2).
+		 ].
+	^ data.
 ]
 
 { #category : #parsing }
@@ -170,7 +174,7 @@ IniReader >> parseKeyValuePair [
 	self expectChar: self keyValueSeparator .
 	
 	value := String streamContents: [ :stream | 
-		[ readStream atEnd or: [ readStream peek = Character cr ] ] 
+		[ readStream atEnd or: [ (readStream peek = Character cr) | (readStream peek = Character lf) ] ] 
 			whileFalse: [ stream nextPut: self parseCharacter ] ].
 
 	^ { key trim. value trim. }
