@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'readStream',
-		'data'
+		'data',
+		'keyValueSeparator'
 	],
 	#category : #'INI-Parser'
 }
@@ -26,6 +27,11 @@ IniReader >> consumeWhitespace [
 			readStream next ]
 ]
 
+{ #category : #configuration }
+IniReader >> defaultKeyValueSeparator [
+	^ $=.
+]
+
 { #category : #private }
 IniReader >> expectChar: character [
 	"Expect character and consume input and optional whitespace at the end,
@@ -39,6 +45,12 @@ IniReader >> expectChar: character [
 IniReader >> initialize [
 	super initialize .
 	data := Dictionary new.
+]
+
+{ #category : #configuration }
+IniReader >> keyValueSeparator [
+	keyValueSeparator ifNil: [ keyValueSeparator := self defaultKeyValueSeparator  ].
+	^keyValueSeparator.
 ]
 
 { #category : #private }
@@ -142,8 +154,7 @@ IniReader >> parseCharacterHexDigit [
 { #category : #parsing }
 IniReader >> parseComment [
 	"A comment is any line where the first non-whitespace character is a # or ;"
-
-			
+	
 	readStream nextLine .
 ]
 
@@ -154,14 +165,15 @@ IniReader >> parseKeyValuePair [
 	| key value |
 
 	key := String streamContents: [ :stream | 
-		[ readStream atEnd or: [ readStream peek = $= ] ] 
+		[ readStream atEnd or: [ readStream peek = self keyValueSeparator  ] ] 
 			whileFalse: [ stream nextPut: self parseCharacter ] ].
-	self expectChar: $=.
+	self expectChar: self keyValueSeparator .
 	
 	value := String streamContents: [ :stream | 
 		[ readStream atEnd or: [ readStream peek = Character cr ] ] 
 			whileFalse: [ stream nextPut: self parseCharacter ] ].
 
+	^ { key trim. value trim. }
 ]
 
 { #category : #parsing }
