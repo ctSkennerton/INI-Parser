@@ -8,12 +8,31 @@ Class {
 IniReaderTest >> testParse [
 	| r v expected |	
 		
-	r := IniReader on: ('[Section]',Character lf asString ,'key=value') readStream .
-	v := r parse .
 	expected := Dictionary new.
 	expected at: 'Section' put: Dictionary new.
 	expected at: 'Section' at: 'key' put: 'value'.
+		
+	r := IniReader on: ('[Section]',Character lf asString ,'key=value') readStream .
+	v := r parse .
+	
 	self assert: v equals: expected .
+	
+	r := IniReader on: ('[Section]',Character lf asString ,Character lf asString, 'key = value') readStream .
+	v := r parse .
+
+	self assert: v equals: expected .
+	
+	expected := Dictionary new.
+	expected at: 'Section' put: Dictionary new.
+	expected at: 'Section' at: 'key' put: 'value'.
+	expected at: 'Section' at: 'key2' put: 'value2'.
+		
+	r := IniReader on: ('[Section]',Character lf asString , 'key = value', Character lf asString,'key2 = value2') readStream .
+	v := r parse .
+
+	self assert: v equals: expected .
+	
+
 ]
 
 { #category : #tests }
@@ -25,6 +44,40 @@ IniReaderTest >> testParseSection [
 	self assert: v equals: 'Section' .
 	
 	
+]
+
+{ #category : #tests }
+IniReaderTest >> testParseTwoKeyValue [
+	| r v expected |	
+		
+	
+	expected := Dictionary new.
+	expected at: 'Section' put: Dictionary new.
+	expected at: 'Section' at: 'key' put: 'value'.
+	expected at: 'Section' at: 'key2' put: 'value2'.
+		
+	r := IniReader on: ('[Section]',Character lf asString , 'key = value', Character lf asString,'key2 = value2') readStream .
+	v := r parse .
+
+	self assert: v equals: expected .
+	
+]
+
+{ #category : #tests }
+IniReaderTest >> testParseTwoSections [
+
+			
+	| r v expected |
+	r := IniReader on: ('[Section]',Character lf asString , 'key = value', Character lf asString, '[Section2]',Character lf asString,'key = value') readStream .
+	v := r parse .
+	
+	expected := Dictionary new.
+	expected at: 'Section' put: Dictionary new.
+	expected at: 'Section' at: 'key' put: 'value'.
+	expected at: 'Section2' put: Dictionary new.
+	expected at: 'Section2' at: 'key' put: 'value'.
+
+	self assert: v equals: expected .
 ]
 
 { #category : #tests }

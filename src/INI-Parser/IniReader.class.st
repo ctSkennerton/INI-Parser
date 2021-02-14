@@ -78,9 +78,9 @@ IniReader >> on: aReadStream [
 IniReader >> parse [
 	"Main entry point. Returns a two level dictionary of the straem contents"
 	| char section keyValue |
-	self consumeWhitespace .
 	
-	readStream atEnd ifFalse: [ 
+	[readStream atEnd] whileFalse: [ 
+		self consumeWhitespace .
 		char := readStream peek.
 		char = $[
 			ifTrue: [ 
