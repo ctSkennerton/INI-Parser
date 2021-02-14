@@ -103,4 +103,9 @@ IniReaderTest >> testparseKeyValuePair [
 	r := IniReader on: 'key = value := value = value' readStream .
 	v := r parseKeyValuePair .
 	self assert: v equals: { 'key'. 'value := value = value' } .
+	
+	r := IniReader on: 'key: value' readStream .
+	r keyValueSeparator: $:.
+	v := r parseKeyValuePair .
+	self assert: v equals: { 'key'. 'value' } .
 ]

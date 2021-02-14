@@ -53,6 +53,11 @@ IniReader >> keyValueSeparator [
 	^keyValueSeparator.
 ]
 
+{ #category : #configuration }
+IniReader >> keyValueSeparator: aCharacter [
+	keyValueSeparator := aCharacter 
+]
+
 { #category : #private }
 IniReader >> matchChar: character [
 	"Tries to match character, consume input and 
