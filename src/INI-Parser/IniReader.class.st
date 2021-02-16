@@ -1,3 +1,41 @@
+"
+I parse a ReadStream containing the contents of an INI file into a two level dictionary. 
+
+I don't perform any type conversion, the keys and values of the dictionary are Strings.
+
+## Public API and Key Messages
+
+- IniReader on: aREadStream. Create a IniReader object using the input ReadStream.
+- IniReader parse. Convert the ReadStream into a Dictionary. 
+
+An INI file looks something like the following:
+
+	[Section]
+
+	key = value 
+	key2 = value2 
+	key with spaces = value with spaces
+	key =
+	
+	[ Another Section ]
+	key = value
+   
+Parsing this will create the following data structure:
+
+	{ 'Section' -> { 'key' -> 'value'. 'key2' -> 'value2'. 'key with spaces' -> 'value with spaces', 'key' -> '' }. 'Another Section' -> { 'key' -> 'value' } }
+	
+Keys and values are separated by $= by default and are trimmed during parsing so that leading and 
+trailing whitespace is removed. The separater can be changed with the IniReader>>>keyValueSeparator:
+message. When there is only whitespace after the separator the value for the key will be an empty string.
+
+## Internal Representation and Key Implementation Points.
+
+    Instance Variables
+	data:		Dictionary
+	keyValueSeparator:	 String
+	readStream:		ReadStream
+
+"
 Class {
 	#name : #IniReader,
 	#superclass : #Object,
