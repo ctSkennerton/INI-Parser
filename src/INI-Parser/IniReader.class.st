@@ -138,6 +138,7 @@ IniReader >> parse [
 		
 		keyValue := self parseKeyValuePair.
 		data at: section at: (keyValue at: 1) put: (keyValue at: 2).
+		self consumeWhitespace .
 		 ].
 	^ data.
 ]
