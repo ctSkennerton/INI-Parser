@@ -122,7 +122,9 @@ IniReader >> parse [
 	"Main entry point. Returns a two level dictionary of the stream contents"
 
 	| char section keyValue |
-
+	
+	section := ''.
+	
 	[readStream atEnd] whileFalse: [ 
 		self consumeWhitespace.
 		char := readStream peek.

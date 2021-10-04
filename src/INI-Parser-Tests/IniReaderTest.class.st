@@ -36,6 +36,51 @@ IniReaderTest >> testParse [
 ]
 
 { #category : #tests }
+IniReaderTest >> testParseGlobalKeyValues [
+
+	| reader parsed expected |
+
+	expected := Dictionary new.
+	expected at: '' put: Dictionary new.
+	expected at: '' at: 'server' put: '192.0.2.62'.
+	expected at: '' at: 'port' put: '143'.
+
+	reader := IniReader on: 'server=192.0.2.62<l>port=143' expandMacros readStream.
+	parsed := reader parse.
+
+	self assert: parsed equals: expected
+]
+
+{ #category : #tests }
+IniReaderTest >> testParseKeyValuePair [
+	| r v |
+	r := IniReader on: 'key=value' readStream.
+	v := r parseKeyValuePair.
+	self assert: v equals: {'key' . 'value'}.
+	
+	r := IniReader on: 'key=' readStream.
+	v := r parseKeyValuePair.
+	self assert: v equals: {'key' . ''}.
+
+	r := IniReader on: 'key with spaces=value' readStream.
+	v := r parseKeyValuePair.
+	self assert: v equals: {'key with spaces' . 'value'}.
+	r := IniReader on: 'key = value' readStream.
+	v := r parseKeyValuePair.
+	self assert: v equals: {'key' . 'value'}.
+	r := IniReader on: 'key = value value two value' readStream.
+	v := r parseKeyValuePair.
+	self assert: v equals: {'key' . 'value value two value'}.
+	r := IniReader on: 'key = value := value = value' readStream.
+	v := r parseKeyValuePair.
+	self assert: v equals: {'key' . 'value := value = value'}.
+	r := IniReader on: 'key: value' readStream.
+	r keyValueSeparator: $:.
+	v := r parseKeyValuePair.
+	self assert: v equals: {'key' . 'value'}
+]
+
+{ #category : #tests }
 IniReaderTest >> testParseSection [
 	| r v |	
 		
@@ -96,33 +141,4 @@ IniReaderTest >> testParseTwoSectionsWithCommentAfterSection [
 	expected at: 'database' at: 'port' put: '143'.
 
 	self assert: v equals: expected
-]
-
-{ #category : #tests }
-IniReaderTest >> testparseKeyValuePair [
-	| r v |
-	r := IniReader on: 'key=value' readStream.
-	v := r parseKeyValuePair.
-	self assert: v equals: {'key' . 'value'}.
-	
-	r := IniReader on: 'key=' readStream.
-	v := r parseKeyValuePair.
-	self assert: v equals: {'key' . ''}.
-
-	r := IniReader on: 'key with spaces=value' readStream.
-	v := r parseKeyValuePair.
-	self assert: v equals: {'key with spaces' . 'value'}.
-	r := IniReader on: 'key = value' readStream.
-	v := r parseKeyValuePair.
-	self assert: v equals: {'key' . 'value'}.
-	r := IniReader on: 'key = value value two value' readStream.
-	v := r parseKeyValuePair.
-	self assert: v equals: {'key' . 'value value two value'}.
-	r := IniReader on: 'key = value := value = value' readStream.
-	v := r parseKeyValuePair.
-	self assert: v equals: {'key' . 'value := value = value'}.
-	r := IniReader on: 'key: value' readStream.
-	r keyValueSeparator: $:.
-	v := r parseKeyValuePair.
-	self assert: v equals: {'key' . 'value'}
 ]
