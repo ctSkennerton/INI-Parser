@@ -81,6 +81,24 @@ IniReaderTest >> testParseTwoSections [
 ]
 
 { #category : #tests }
+IniReaderTest >> testParseTwoSectionsWithCommentAfterSection [
+
+	| r v expected |
+
+	r := IniReader on:
+		     '[database]<l>; use IP address in case network name resolution is not working<l>server=192.0.2.62<l>port=143'
+			     expandMacros readStream.
+	v := r parse.
+
+	expected := Dictionary new.
+	expected at: 'database' put: Dictionary new.
+	expected at: 'database' at: 'server' put: '192.0.2.62'.
+	expected at: 'database' at: 'port' put: '143'.
+
+	self assert: v equals: expected
+]
+
+{ #category : #tests }
 IniReaderTest >> testparseKeyValuePair [
 	| r v |
 	r := IniReader on: 'key=value' readStream.
