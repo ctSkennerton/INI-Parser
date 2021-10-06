@@ -38,4 +38,4 @@ data := parser parse.
 ---
 
 The parsing code is a derivative work of the [NeoJSON](https://github.com/svenvc/NeoJSON)
-parser by @svenvc under the MIT license.
+parser by [Sven Van Caekenberghe](https://github.com/svenvc) under the MIT license.
