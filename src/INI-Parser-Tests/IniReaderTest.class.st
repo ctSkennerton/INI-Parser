@@ -5,6 +5,21 @@ Class {
 }
 
 { #category : #tests }
+IniReaderTest >> testEmptyValueDontEatNextKeyValuePair [
+
+	| reader parsed expected |
+	expected := Dictionary new.
+	expected at: '' put: Dictionary new.
+	expected at: '' at: 'server' put: ''.
+	expected at: '' at: 'port' put: '143'.
+
+	reader := IniReader on: 'server=<l>port=143' expandMacros readStream.
+	parsed := reader parse.
+
+	self assert: parsed equals: expected
+]
+
+{ #category : #tests }
 IniReaderTest >> testParse [
 	| r v expected |	
 		

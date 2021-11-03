@@ -218,8 +218,10 @@ IniReader >> parseKeyValuePair [
 	key := String streamContents: [ :stream | 
 		[ readStream atEnd or: [ readStream peek = self keyValueSeparator  ] ] 
 			whileFalse: [ stream nextPut: self parseCharacter ] ].
-	self expectChar: self keyValueSeparator .
-	
+		
+	(readStream peekFor: self keyValueSeparator) 
+		ifFalse: [self error: ('<1s> expected' expandMacrosWith: self keyValueSeparator asString)].
+		
 	value := String streamContents: [ :stream | 
 		[ readStream atEnd or: [ (readStream peek = Character cr) | (readStream peek = Character lf) ] ] 
 			whileFalse: [ stream nextPut: self parseCharacter ] ].
