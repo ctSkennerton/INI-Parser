@@ -34,20 +34,19 @@ IniWriter >> nextPut: aDictionary [
 	aDictionary associationsDo: [ :keyAndValue | 
 		keyAndValue value isDictionary
 			ifTrue: [ 
-				keyAndValue key isEmpty
-					ifFalse: [ 
-						stream
-							nextPutAll: '[';
-							nextPutAll: keyAndValue key asString;
-							nextPutAll: ']';
-							crlf ] .
-						self nextPut: keyAndValue value.
+				keyAndValue key isEmpty ifFalse: [ 
+					stream
+						nextPutAll: '[';
+						nextPutAll: keyAndValue key asString;
+						nextPutAll: ']';
+						crlf ].
+				self nextPut: keyAndValue value.
 				stream crlf ]
 			ifFalse: [ 
 				stream
 					nextPutAll: keyAndValue key;
 					nextPutAll: ' = ';
-					nextPutAll: keyAndValue value;
+					nextPutAll: keyAndValue value asString;
 					crlf ] ]
 ]
 
