@@ -215,7 +215,10 @@ IniReaderTest >> testParseWithCommentedSection [
 IniReaderTest >> testParseWithMultipleSectionsAndComments [
 
 	| r v expected |
-	r := IniReader on: '[Section]
+	r := IniReader on: '
+globalValue = 11111
+
+[Section]
 key = value
 #key2 = value2
 
@@ -241,6 +244,8 @@ key = value
 	v := r parse.
 
 	expected := Dictionary new.
+	expected at: '' put: Dictionary new.
+	expected at: '' at: 'globalValue' put: '11111'.
 	expected at: 'Section' put: Dictionary new.
 	expected at: 'Section' at: 'key' put: 'value'.
 	expected at: 'Section2' put: Dictionary new.
