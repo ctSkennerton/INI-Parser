@@ -119,30 +119,31 @@ IniReader >> on: aReadStream [
 
 { #category : #parsing }
 IniReader >> parse [
+
 	"Main entry point. Returns a two level dictionary of the stream contents"
 
 	| char section keyValue |
-	
 	section := ''.
-	
-	[readStream atEnd] whileFalse: [ 
+
+	[ readStream atEnd ] whileFalse: [ 
 		self consumeWhitespace.
 		char := readStream peek.
-		char = $[
-			ifTrue: [ 
-				section := self parseSection.
-				data at: section put: Dictionary new.
-				char := readStream peek
-			].
-		char = $;
-			ifTrue: [ self parseComment ].
-		char = $#
-			ifTrue: [ self parseComment ].
-
-		keyValue := self parseKeyValuePair.
-		data at: section at: (keyValue at: 1) put: (keyValue at: 2).
-		self consumeWhitespace
-		].
+		char = $[ ifTrue: [ 
+			section := self parseSection.
+			data at: section put: Dictionary new.
+			char := readStream peek ].
+		char = $; ifTrue: [ 
+			self parseComment.
+			char := readStream peek ].
+		char = $# ifTrue: [ 
+			self parseComment.
+			char := readStream peek ].
+		self consumeWhitespace .
+		char := readStream peek.
+		readStream atEnd ifFalse: [ 
+			';#[' detect: [ :each | each = char ] ifNone: [ 
+				keyValue := self parseKeyValuePair.
+				data at: section at: (keyValue at: 1) put: (keyValue at: 2) ] ] ].
 	^ data
 ]
 

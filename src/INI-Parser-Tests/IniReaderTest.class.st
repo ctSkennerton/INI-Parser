@@ -51,6 +51,18 @@ IniReaderTest >> testParse [
 ]
 
 { #category : #tests }
+IniReaderTest >> testParseEmptySection [
+
+	| tmp1 tmp2 tmp3 tmp4 |
+	tmp4 := Dictionary new.
+	tmp4 at: 'Section' put: Dictionary new.
+	tmp2 := IniReader on:
+		        ('[Section]' , Character lf asString) readStream.
+	tmp3 := tmp2 parse.
+	self assert: tmp3 equals: tmp4
+]
+
+{ #category : #tests }
 IniReaderTest >> testParseGlobalKeyValues [
 
 	| reader parsed expected |
@@ -126,18 +138,23 @@ IniReaderTest >> testParseTwoKeyValue [
 { #category : #tests }
 IniReaderTest >> testParseTwoSections [
 
-			
 	| r v expected |
-	r := IniReader on: ('[Section]',Character lf asString , 'key = value', Character lf asString, '[Section2]',Character lf asString,'key = value') readStream .
-	v := r parse .
-	
+	r := IniReader on: '[Section]
+
+key = value
+
+[Section2]
+
+key2 = value2' readStream.
+	v := r parse.
+
 	expected := Dictionary new.
 	expected at: 'Section' put: Dictionary new.
 	expected at: 'Section' at: 'key' put: 'value'.
 	expected at: 'Section2' put: Dictionary new.
-	expected at: 'Section2' at: 'key' put: 'value'.
+	expected at: 'Section2' at: 'key2' put: 'value2'.
 
-	self assert: v equals: expected .
+	self assert: v equals: expected
 ]
 
 { #category : #tests }
@@ -154,6 +171,83 @@ IniReaderTest >> testParseTwoSectionsWithCommentAfterSection [
 	expected at: 'database' put: Dictionary new.
 	expected at: 'database' at: 'server' put: '192.0.2.62'.
 	expected at: 'database' at: 'port' put: '143'.
+
+	self assert: v equals: expected
+]
+
+{ #category : #tests }
+IniReaderTest >> testParseWithCommentedKeyValue [
+
+	| r v expected |
+	r := IniReader on: '[Section]
+key = value
+#key2 = value2' readStream.
+
+	v := r parse.
+
+	expected := Dictionary new.
+	expected at: 'Section' put: Dictionary new.
+	expected at: 'Section' at: 'key' put: 'value'.
+
+
+	self assert: v equals: expected
+]
+
+{ #category : #tests }
+IniReaderTest >> testParseWithCommentedSection [
+
+	| r v expected |
+	r := IniReader on:
+		     ('[Section]' , Character lf asString , 'key = value'
+		      , Character lf asString , '#[Section2]' , Character lf asString
+		      , 'key2 = value2') readStream.
+	v := r parse.
+
+	expected := Dictionary new.
+	expected at: 'Section' put: Dictionary new.
+	expected at: 'Section' at: 'key' put: 'value'.
+	expected at: 'Section' at: 'key2' put: 'value2'.
+
+	self assert: v equals: expected
+]
+
+{ #category : #tests }
+IniReaderTest >> testParseWithMultipleSectionsAndComments [
+
+	| r v expected |
+	r := IniReader on: '[Section]
+key = value
+#key2 = value2
+
+
+[Section2]
+
+key=value
+anotherKey  = value
+
+#[some commented out section]
+#
+#key = value
+# another key=  some value
+
+# this is a comment
+[Section 3]
+
+key = value
+
+
+' readStream.
+
+	v := r parse.
+
+	expected := Dictionary new.
+	expected at: 'Section' put: Dictionary new.
+	expected at: 'Section' at: 'key' put: 'value'.
+	expected at: 'Section2' put: Dictionary new.
+	expected at: 'Section2' at: 'key' put: 'value'.
+	expected at: 'Section2' at: 'anotherKey' put: 'value'.
+	expected at: 'Section 3' put: Dictionary new.
+	expected at: 'Section 3' at: 'key' put: 'value'.
 
 	self assert: v equals: expected
 ]
