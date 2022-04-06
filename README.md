@@ -9,6 +9,7 @@ A parser for [INI configuration files](https://en.wikipedia.org/wiki/INI_file).
 [![GitHub release](https://img.shields.io/github/release/ctSkennerton/INI-Parser.svg)](https://github.com/ctSkennerton/INI-Parser/releases/latest)
 [![Pharo 8.0](https://img.shields.io/badge/Pharo-8.0-informational)](https://pharo.org)
 [![Pharo 9.0](https://img.shields.io/badge/Pharo-9.0-informational)](https://pharo.org)
+[![Pharo 10](https://img.shields.io/badge/Pharo-10-informational)](https://pharo.org)
 
 This is a simple parser for files with the following format:
 
